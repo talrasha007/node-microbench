@@ -1,0 +1,10 @@
+{
+    "name": "node-microbench",
+    "version": "0.0.1",
+    "repository": "https://github.com/talrasha007/node-microbench.git",
+    "dependencies": {
+        "nan": "git+https://github.com/talrasha007/nan.git"
+    },
+    "readmeFile": "README.md",
+    "main": "build/Release/node-microbench.node"
+}
