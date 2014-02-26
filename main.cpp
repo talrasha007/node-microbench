@@ -42,7 +42,7 @@ NAN_METHOD(testCallback) {
 	NanReturnUndefined();
 }
 
-class TestWrap : ObjectWrap {
+class TestWrap : public ObjectWrap {
 public:
 	static Persistent<Function> ctor;
 
