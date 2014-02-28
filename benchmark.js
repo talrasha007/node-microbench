@@ -19,6 +19,13 @@ function testCallback_cpp() {
     }
 }
 
+function testGet() {
+    var obj = { a: 1, b: 2, c: 3 };
+    for (var i = 0; i < cnt; i++) {
+        test.testGet(obj);
+    }
+}
+
 function testFoo() {
     for (var i = 0; i < cnt; i++) {
         test.testCall();
@@ -94,6 +101,7 @@ function testWrapFoo() {
 
 console.log("run %d times:", cnt);
 benchmark('testFoo', testFoo);
+benchmark('testGet', testGet);
 benchmark('testRetString', testRetString);
 benchmark('testRetObj_js', testRetObj_js);
 benchmark('testRetObj_cpp', testRetObj_cpp);

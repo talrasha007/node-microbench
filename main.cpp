@@ -15,6 +15,17 @@ NAN_METHOD(testRetString) {
 	NanReturnValue(String::New("1234567890"));
 }
 
+NAN_METHOD(testGet) {
+	NanScope();
+
+	Local<Object> obj = args[0]->ToObject();
+	int a = obj->Get(NanSymbol("a"))->Int32Value(),
+        b = obj->Get(NanSymbol("b"))->Int32Value(),
+        c = obj->Get(NanSymbol("c"))->Int32Value();
+
+	NanReturnValue(Number::New(a + b + c));
+}
+
 NAN_METHOD(testRetObj) {
 	NanScope();
 
@@ -93,6 +104,7 @@ NAN_METHOD(testWrapNew) {
 void InitAll(Handle<Object> exports) {
 	NODE_SET_METHOD(exports, "testCall", testCall);
 	NODE_SET_METHOD(exports, "testRetString", testRetString);
+	NODE_SET_METHOD(exports, "testGet", testGet);
 	NODE_SET_METHOD(exports, "testRetObj", testRetObj);
 	NODE_SET_METHOD(exports, "testCallback", testCallback);
 	NODE_SET_METHOD(exports, "testBuffer", testBuffer);
