@@ -15,6 +15,7 @@ matcha
 # Conclusion
  - Performance of function call in C++ plugin is acceptable.
  - Using C++ plugin to deal with js object(s)/callback(s) is not so fast.
+ - Creating ObjectWrap is slow.
  - Creating Buffer object is slow.
   
 # Result
