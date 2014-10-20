@@ -20,6 +20,7 @@ matcha
 # Result
 ```
 // ENV: MBP with 16GB RAM
+// NODE_VER: 0.11.14
                       empty function call
    1,679,354,376 op/s » js
       38,450,717 op/s » c++
