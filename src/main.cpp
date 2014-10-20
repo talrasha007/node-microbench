@@ -12,27 +12,27 @@ NAN_METHOD(testCall) {
 
 NAN_METHOD(testRetString) {
 	NanScope();
-	NanReturnValue(String::New("1234567890"));
+	NanReturnValue(NanNew("1234567890"));
 }
 
 NAN_METHOD(testGet) {
 	NanScope();
 
 	Local<Object> obj = args[0]->ToObject();
-	int a = obj->Get(NanSymbol("a"))->Int32Value(),
-        b = obj->Get(NanSymbol("b"))->Int32Value(),
-        c = obj->Get(NanSymbol("c"))->Int32Value();
+	int a = obj->Get(NanNew("a"))->Int32Value(),
+        b = obj->Get(NanNew("b"))->Int32Value(),
+        c = obj->Get(NanNew("c"))->Int32Value();
 
-	NanReturnValue(Number::New(a + b + c));
+	NanReturnValue(NanNew<Number>(a + b + c));
 }
 
 NAN_METHOD(testRetObj) {
 	NanScope();
 
-	Local<Object> obj = Object::New();
-	obj->Set(NanSymbol("a"), String::New("1234567890"));
-	obj->Set(NanSymbol("b"), String::New("234567890"));
-	obj->Set(NanSymbol("c"), String::New("34567890"));
+	Local<Object> obj = NanNew<Object>();
+	obj->Set(NanNew("a"), NanNew("1234567890"));
+	obj->Set(NanNew("b"), NanNew("234567890"));
+	obj->Set(NanNew("c"), NanNew("34567890"));
 
 	NanReturnValue(obj);
 }
@@ -58,15 +58,15 @@ public:
 	static Persistent<Function> ctor;
 
 	void static setup(Handle<Object> exports) {
-		Local<FunctionTemplate> tpl = FunctionTemplate::New(TestWrap::New);
-		tpl->SetClassName(String::NewSymbol("TestWrap"));
+		Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(TestWrap::New);
+		tpl->SetClassName(NanNew("TestWrap"));
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 		NODE_SET_METHOD(tpl->PrototypeTemplate(), "unwrap", TestWrap::unwrap);
 		NODE_SET_METHOD(tpl->PrototypeTemplate(), "foo", TestWrap::foo);
 
-		exports->Set(String::NewSymbol("TestWrap"), tpl->GetFunction());
-		NanAssignPersistent(Function, TestWrap::ctor, tpl->GetFunction());
+		exports->Set(NanNew("TestWrap"), tpl->GetFunction());
+		NanAssignPersistent(TestWrap::ctor, tpl->GetFunction());
 	}
 
 	static NAN_METHOD(New) {
@@ -98,7 +98,7 @@ Persistent<Function> TestWrap::ctor;
 
 NAN_METHOD(testWrapNew) {
 	NanScope();
-	NanReturnValue(NanPersistentToLocal(TestWrap::ctor)->NewInstance());
+	NanReturnValue(NanNew(TestWrap::ctor)->NewInstance());
 }
 
 void InitAll(Handle<Object> exports) {

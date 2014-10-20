@@ -6,7 +6,7 @@
         "<!(node -e \"require('nan')\")"
       ],
       "sources": [
-        "main.cpp"
+        "src/main.cpp"
       ]
     }
   ]
