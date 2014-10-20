@@ -18,7 +18,7 @@ matcha
  - Creating ObjectWrap is slow.
  - Creating Buffer object is slow.
   
-# Result
+# Benchmark Result
 ```
 // ENV: MBP with 16GB RAM
 // NODE_VER: 0.11.14
