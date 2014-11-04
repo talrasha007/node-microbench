@@ -62,8 +62,8 @@ public:
 		tpl->SetClassName(NanNew("TestWrap"));
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-		NODE_SET_METHOD(tpl->PrototypeTemplate(), "unwrap", TestWrap::unwrap);
-		NODE_SET_METHOD(tpl->PrototypeTemplate(), "foo", TestWrap::foo);
+		NODE_SET_PROTOTYPE_METHOD(tpl, "unwrap", TestWrap::unwrap);
+		NODE_SET_PROTOTYPE_METHOD(tpl, "foo", TestWrap::foo);
 
 		exports->Set(NanNew("TestWrap"), tpl->GetFunction());
 		NanAssignPersistent(TestWrap::ctor, tpl->GetFunction());
