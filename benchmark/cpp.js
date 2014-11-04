@@ -32,6 +32,7 @@ suite('set object properties & return', function () {
     }
 
     bench('js', function () { jsfn(); });
+    bench('c++ execute js', function () { binding.testRun(); });
     bench('c++', function () { binding.testRetObj(); });
 });
 

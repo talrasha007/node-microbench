@@ -101,7 +101,33 @@ NAN_METHOD(testWrapNew) {
 	NanReturnValue(NanNew(TestWrap::ctor)->NewInstance());
 }
 
+Persistent<Context> testContext;
+Persistent<Script> testScript;
+void initTestContext() {
+	Handle<ObjectTemplate> global = NanNew<ObjectTemplate>();
+	global->Set(NanNew("a"), NanNew("1234567890"));
+	global->Set(NanNew("b"), NanNew("234567890"));
+	global->Set(NanNew("c"), NanNew("34567890"));
+
+	v8::Handle<v8::Context> context = NanNewContextHandle(NULL, global);
+	Context::Scope context_scope(context);
+	NanAssignPersistent(testContext, context);
+
+	Handle<Script> script = Script::Compile(NanNew("({ a: a, b: b, c: c })"));
+	NanAssignPersistent(testScript, script);
+}
+
+NAN_METHOD(testRun) {
+	NanScope();
+	//Context::Scope context_scope(NanNew(testContext));
+	Local<Script> script = NanNew(testScript);
+	NanReturnValue(script->Run());
+}
+
 void InitAll(Handle<Object> exports) {
+	initTestContext();
+	NODE_SET_METHOD(exports, "testRun", testRun);
+
 	NODE_SET_METHOD(exports, "testCall", testCall);
 	NODE_SET_METHOD(exports, "testRetString", testRetString);
 	NODE_SET_METHOD(exports, "testGet", testGet);
