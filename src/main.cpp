@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <nnu.h>
 
 using namespace v8;
 using namespace node;
@@ -52,6 +52,46 @@ NAN_METHOD(testCallback) {
 	NanCallback(Local<Function>::Cast(args[0])).Call(0, 0);	
 	NanReturnUndefined();
 }
+
+class IntPtr : public NnuPointer<IntPtr> {
+public:
+	IntPtr() : val_(0) { }
+	~IntPtr() { }
+
+	static void setup(Handle<Object>& exports) {
+		NODE_SET_METHOD(exports, "createIntPtr", createIntPtr);
+		NODE_SET_METHOD(exports, "unwrapIntPtr", unwrap);
+		NODE_SET_METHOD(exports, "valOfPtr", val);
+	}
+
+private:
+	static NAN_METHOD(createIntPtr) {
+		NanScope();
+		IntPtr *ptr = new IntPtr();
+		NanReturnValue(ptr->Wrap());
+	}
+
+	static NAN_METHOD(unwrap) {
+		NanScope();
+		IntPtr* ptr = Unwrap(args[0]);
+		NanReturnUndefined();
+	}
+
+	static NAN_METHOD(val) {
+		NanScope();
+		IntPtr* ptr = Unwrap(args[0]);
+
+		if (args[1]->IsNumber()) {
+			ptr->val_ = args[1]->Int32Value();
+			NanReturnUndefined();
+		} else {
+			NanReturnValue(NanNew(ptr->val_));
+		}
+	}
+
+private:
+	int val_;
+};
 
 class TestWrap : public ObjectWrap {
 public:
@@ -136,6 +176,7 @@ void InitAll(Handle<Object> exports) {
 	NODE_SET_METHOD(exports, "testBuffer", testBuffer);
 	NODE_SET_METHOD(exports, "testBufferSmalloc", testBufferSmalloc);
 	NODE_SET_METHOD(exports, "testWrapNew", testWrapNew);
+	IntPtr::setup(exports);
 	TestWrap::setup(exports);
 }
 

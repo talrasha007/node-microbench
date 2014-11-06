@@ -38,11 +38,15 @@ suite('set object properties & return', function () {
 
 suite('object wrap', function () {
     var tw = new binding.TestWrap();
+    var ptr = binding.createIntPtr();
 
     bench('ctor:js', function () { new binding.TestWrap(); });
     bench('ctor:c++', function () { binding.testWrapNew(); });
     bench('function call', function () { tw.foo(); });
     bench('unwrap', function () { tw.unwrap(); });
+    bench('create IntPtr', function () { binding.createIntPtr(); });
+    bench('unwrap IntPtr', function () { binding.unwrapIntPtr(ptr); });
+    bench('val of IntPtr', function () { binding.valOfPtr(ptr); });
 });
 
 suite('callback', function () {
