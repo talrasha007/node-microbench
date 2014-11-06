@@ -59,8 +59,13 @@ suite('callback', function () {
 suite('buffer', function () {
     function jsfn() { return new Buffer(0); }
 
+    var buf = new Buffer(1024), i = 0;
+
     bench('js', function () { jsfn(function () {}); });
     bench('c++', function () { binding.testBuffer(); });
     bench('c++:smalloc', function () { binding.testBufferSmalloc(); });
+    bench('buffer [] access', function () { return buf[i++ % buf.length]; });
+    bench('buffer readI32BE', function () { return buf.readUInt32BE(0); });
+    bench('buffer writeI32BE', function () { return buf.writeUInt32BE(0, 0); });
 });
 
