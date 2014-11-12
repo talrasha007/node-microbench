@@ -12,6 +12,23 @@ suite('async', function () {
     bench('setTimeout_0', function (next) { setTimeout(next, 0); });
     if (global.setImmediate) bench('setImmediate', function (next) { setImmediate(next); });
     bench('c++ async', function (next) { binding.testAsync(next); });
+
+    bench('c++ async parallelx3', function (next) {
+        var cnt = 0;
+        function cb() { if (++cnt === 3) next(); };
+        binding.testAsync(cb);
+        binding.testAsync(cb);
+        binding.testAsync(cb);
+    });
+
+    bench('c++ async parallelx4', function (next) {
+        var cnt = 0;
+        function cb() { if (++cnt === 4) next(); };
+        binding.testAsync(cb);
+        binding.testAsync(cb);
+        binding.testAsync(cb);
+        binding.testAsync(cb);
+    });
 });
 
 suite('string ret function call', function () {
