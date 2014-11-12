@@ -10,6 +10,19 @@ NAN_METHOD(testCall) {
 	NanReturnUndefined();
 }
 
+class EmptyAsync : public NanAsyncWorker {
+public:
+	EmptyAsync(NanCallback* cb) : NanAsyncWorker(cb) {}
+	virtual void Execute() { };
+};
+
+NAN_METHOD(testAsync) {
+	NanScope();
+	NanCallback *callback = new NanCallback(args[0].As<Function>());
+	NanAsyncQueueWorker(new EmptyAsync(callback));
+	NanReturnUndefined();
+}
+
 NAN_METHOD(testRetString) {
 	NanScope();
 	NanReturnValue(NanNew("1234567890"));
@@ -169,6 +182,7 @@ void InitAll(Handle<Object> exports) {
 	NODE_SET_METHOD(exports, "testRun", testRun);
 
 	NODE_SET_METHOD(exports, "testCall", testCall);
+	NODE_SET_METHOD(exports, "testAsync", testAsync);
 	NODE_SET_METHOD(exports, "testRetString", testRetString);
 	NODE_SET_METHOD(exports, "testGet", testGet);
 	NODE_SET_METHOD(exports, "testRetObj", testRetObj);

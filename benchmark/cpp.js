@@ -7,6 +7,13 @@ suite('empty function call', function () {
     bench('c++', function () { binding.testCall(); });
 });
 
+suite('async', function () {
+    bench('nextTick', function (next) { process.nextTick(next); });
+    bench('setTimeout_0', function (next) { setTimeout(next, 0); });
+    if (global.setImmediate) bench('setImmediate', function (next) { setImmediate(next); });
+    bench('c++ async', function (next) { binding.testAsync(next); });
+});
+
 suite('string ret function call', function () {
     function jsfn() { return 'aaa'; }
 
