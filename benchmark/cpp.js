@@ -81,12 +81,15 @@ suite('callback', function () {
 });
 
 suite('buffer', function () {
-    function jsfn() { return new Buffer(0); }
+    function jsfn(sz) { return new Buffer(sz); }
 
     var buf = new Buffer(1024), i = 0;
 
-    bench('js', function () { jsfn(function () {}); });
-    bench('c++', function () { binding.testBuffer(); });
+    bench('js size 0', function () { jsfn(0); });
+    bench('c++ size 0', function () { binding.testBuffer(0); });
+    bench('js size 8', function () { jsfn(8); });
+    bench('c++ size 8', function () { binding.testBuffer(8); });
+
     bench('c++:smalloc', function () { binding.testBufferSmalloc(); });
     bench('buffer [] access', function () { return buf[i++ % buf.length]; });
     bench('buffer readI32BE', function () { return buf.readUInt32BE(0); });

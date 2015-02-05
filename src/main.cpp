@@ -52,7 +52,8 @@ NAN_METHOD(testRetObj) {
 
 NAN_METHOD(testBuffer) {
 	NanScope();
-	NanReturnValue(NanNewBufferHandle(0));
+	uint32_t sz = args[0]->Uint32Value();
+	NanReturnValue(NanNewBufferHandle(sz));
 }
 
 NAN_METHOD(testBufferSmalloc) {
