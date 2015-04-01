@@ -38,6 +38,15 @@ suite('string ret function call', function () {
     bench('c++', function () { binding.testRetString(); });
 });
 
+suite('get array items', function () {
+    var arr = [1, 2, 3];
+    function jsfn(arr) { return arr[0] + arr[1] + arr[2]; }
+
+    bench('js', function () { jsfn(arr); });
+    bench('c++', function () { binding.testArrayGet(arr); });
+    bench('c++ args', function () { binding.testArgs.apply(null, arr); });
+});
+
 suite('get object properties', function () {
     var obj = { a: 1, b: 2, c: 3 };
     function jsfn(o) { return o.a + o.b + o.c; }

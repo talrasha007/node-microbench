@@ -39,6 +39,27 @@ NAN_METHOD(testGet) {
 	NanReturnValue(NanNew<Number>(a + b + c));
 }
 
+NAN_METHOD(testArgs) {
+    NanScope();
+
+    int a = args[0]->Int32Value(),
+        b = args[1]->Int32Value(),
+        c = args[2]->Int32Value();
+
+    NanReturnValue(NanNew<Number>(a + b + c));
+}
+
+NAN_METHOD(testArrayGet) {
+	NanScope();
+
+	Local<Array> arr = Local<Array>::Cast(args[0]->ToObject());
+	int a = arr->Get(0)->Int32Value(),
+        b = arr->Get(1)->Int32Value(),
+        c = arr->Get(2)->Int32Value();
+
+	NanReturnValue(NanNew<Number>(a + b + c));
+}
+
 NAN_METHOD(testRetObj) {
 	NanScope();
 
@@ -186,7 +207,9 @@ void InitAll(Handle<Object> exports) {
 	NODE_SET_METHOD(exports, "testAsync", testAsync);
 	NODE_SET_METHOD(exports, "testRetString", testRetString);
 	NODE_SET_METHOD(exports, "testGet", testGet);
-	NODE_SET_METHOD(exports, "testRetObj", testRetObj);
+    NODE_SET_METHOD(exports, "testArrayGet", testArrayGet);
+    NODE_SET_METHOD(exports, "testArgs", testArgs);
+    NODE_SET_METHOD(exports, "testRetObj", testRetObj);
 	NODE_SET_METHOD(exports, "testCallback", testCallback);
 	NODE_SET_METHOD(exports, "testBuffer", testBuffer);
 	NODE_SET_METHOD(exports, "testBufferSmalloc", testBufferSmalloc);
