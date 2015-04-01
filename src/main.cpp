@@ -42,22 +42,24 @@ NAN_METHOD(testGet) {
 NAN_METHOD(testArgs) {
     NanScope();
 
-    int a = args[0]->Int32Value(),
-        b = args[1]->Int32Value(),
-        c = args[2]->Int32Value();
+    int sum = 0;
+    for (int i = 0; i < args.Length(); i++) {
+        sum += args[i]->Int32Value();
+    }
 
-    NanReturnValue(NanNew<Number>(a + b + c));
+    NanReturnValue(NanNew<Number>(sum));
 }
 
 NAN_METHOD(testArrayGet) {
 	NanScope();
 
 	Local<Array> arr = Local<Array>::Cast(args[0]->ToObject());
-	int a = arr->Get(0)->Int32Value(),
-        b = arr->Get(1)->Int32Value(),
-        c = arr->Get(2)->Int32Value();
+    int sum = 0;
+    for (uint32_t i = 0; i < arr->Length(); i++) {
+        sum += arr->Get(i)->Int32Value();
+    }
 
-	NanReturnValue(NanNew<Number>(a + b + c));
+	NanReturnValue(NanNew<Number>(sum));
 }
 
 NAN_METHOD(testRetObj) {

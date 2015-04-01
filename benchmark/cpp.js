@@ -39,12 +39,12 @@ suite('string ret function call', function () {
 });
 
 suite('get array items', function () {
-    var arr = [1, 2, 3];
-    function jsfn(arr) { return arr[0] + arr[1] + arr[2]; }
+    var arr = [1, 2, 3, 4, 5, 6];
+    function jsfn(arr) { var sum = 0; for (var i = 0; i < arr.length; i++) sum += arr[i]; return sum; }
 
     bench('js', function () { jsfn(arr); });
-    bench('c++', function () { binding.testArrayGet(arr); });
     bench('c++ args', function () { binding.testArgs.apply(null, arr); });
+    bench('c++', function () { binding.testArrayGet(arr); });
 });
 
 suite('get object properties', function () {
