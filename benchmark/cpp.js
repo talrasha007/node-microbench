@@ -38,6 +38,13 @@ suite('string ret function call', function () {
     bench('c++', function () { binding.testRetString(); });
 });
 
+suite('array ret function call', function () {
+    function jsfn() { var arr = []; for (var i = 0; i < 16; i++) arr[i] = i; return arr; }
+
+    bench('js', function () { jsfn(); });
+    bench('c++', function () { binding.testRetArray(); });
+});
+
 suite('get array items', function () {
     var arr = [1, 2, 3, 4, 5, 6];
     function jsfn(arr) { var sum = 0; for (var i = 0; i < arr.length; i++) sum += arr[i]; return sum; }

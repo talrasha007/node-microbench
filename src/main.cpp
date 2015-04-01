@@ -28,6 +28,17 @@ NAN_METHOD(testRetString) {
 	NanReturnValue(NanNew("1234567890"));
 }
 
+NAN_METHOD(testRetArray) {
+    NanScope();
+
+    Handle<Array> arr = NanNew<Array>(16);
+    for (int i = 0; i < 16; i++) {
+        arr->Set(i, NanNew(i));
+    }
+
+    NanReturnValue(arr);
+}
+
 NAN_METHOD(testGet) {
 	NanScope();
 
@@ -208,6 +219,7 @@ void InitAll(Handle<Object> exports) {
 	NODE_SET_METHOD(exports, "testCall", testCall);
 	NODE_SET_METHOD(exports, "testAsync", testAsync);
 	NODE_SET_METHOD(exports, "testRetString", testRetString);
+    NODE_SET_METHOD(exports, "testRetArray", testRetArray);
 	NODE_SET_METHOD(exports, "testGet", testGet);
     NODE_SET_METHOD(exports, "testArrayGet", testArrayGet);
     NODE_SET_METHOD(exports, "testArgs", testArgs);
