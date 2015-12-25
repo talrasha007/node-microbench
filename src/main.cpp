@@ -1,235 +1,205 @@
-#include <nnu.h>
+#include <nan.h>
 
 using namespace v8;
 using namespace node;
 
 void freeNothing(char*, void*) { }
 
-NAN_METHOD(testCall) {
-	NanScope();
-	NanReturnUndefined();
-}
+NAN_METHOD(testCall) { }
 
-class EmptyAsync : public NanAsyncWorker {
+class EmptyAsync : public Nan::AsyncWorker {
 public:
-	EmptyAsync(NanCallback* cb) : NanAsyncWorker(cb) {}
+	EmptyAsync(Nan::Callback* cb) : Nan::AsyncWorker(cb) {}
 	virtual void Execute() { };
 };
 
 NAN_METHOD(testAsync) {
-	NanScope();
-	NanCallback *callback = new NanCallback(args[0].As<Function>());
-	NanAsyncQueueWorker(new EmptyAsync(callback));
-	NanReturnUndefined();
+	Nan::Callback *callback = new Nan::Callback(info[0].As<Function>());
+	Nan::AsyncQueueWorker(new EmptyAsync(callback));
 }
 
 NAN_METHOD(testRetString) {
-	NanScope();
-	NanReturnValue(NanNew("1234567890"));
+    info.GetReturnValue().Set(Nan::New("1234567890").ToLocalChecked());
 }
 
 NAN_METHOD(testRetArray) {
-    NanScope();
-
-    Handle<Array> arr = NanNew<Array>(16);
+    Handle<Array> arr = Nan::New<Array>(16);
     for (int i = 0; i < 16; i++) {
-        arr->Set(i, NanNew(i));
+        arr->Set(i, Nan::New(i));
     }
 
-    NanReturnValue(arr);
+    info.GetReturnValue().Set(arr);
 }
 
 NAN_METHOD(testGet) {
-	NanScope();
+	Local<Object> obj = info[0]->ToObject();
 
-	Local<Object> obj = args[0]->ToObject();
-	int a = obj->Get(NanNew("a"))->Int32Value(),
-        b = obj->Get(NanNew("b"))->Int32Value(),
-        c = obj->Get(NanNew("c"))->Int32Value();
+	int a = obj->Get(Nan::New("a").ToLocalChecked())->Int32Value(),
+        b = obj->Get(Nan::New("b").ToLocalChecked())->Int32Value(),
+        c = obj->Get(Nan::New("c").ToLocalChecked())->Int32Value();
 
-	NanReturnValue(NanNew<Number>(a + b + c));
+	info.GetReturnValue().Set(Nan::New<Number>(a + b + c));
 }
 
 NAN_METHOD(testArgs) {
-    NanScope();
-
     int sum = 0;
-    for (int i = 0; i < args.Length(); i++) {
-        sum += args[i]->Int32Value();
+    for (int i = 0; i < info.Length(); i++) {
+        sum += info[i]->Int32Value();
     }
 
-    NanReturnValue(NanNew<Number>(sum));
+    info.GetReturnValue().Set(Nan::New<Number>(sum));
 }
 
 NAN_METHOD(testArrayGet) {
-	NanScope();
-
-	Local<Array> arr = Local<Array>::Cast(args[0]->ToObject());
+	Local<Array> arr = Local<Array>::Cast(info[0]->ToObject());
     int sum = 0;
     for (uint32_t i = 0; i < arr->Length(); i++) {
         sum += arr->Get(i)->Int32Value();
     }
 
-	NanReturnValue(NanNew<Number>(sum));
+	info.GetReturnValue().Set(Nan::New<Number>(sum));
 }
 
 NAN_METHOD(testRetObj) {
-	NanScope();
+	Local<Object> obj = Nan::New<Object>();
+	obj->Set(Nan::New("a").ToLocalChecked(), Nan::New("1234567890").ToLocalChecked());
+	obj->Set(Nan::New("b").ToLocalChecked(), Nan::New("234567890").ToLocalChecked());
+	obj->Set(Nan::New("c").ToLocalChecked(), Nan::New("34567890").ToLocalChecked());
 
-	Local<Object> obj = NanNew<Object>();
-	obj->Set(NanNew("a"), NanNew("1234567890"));
-	obj->Set(NanNew("b"), NanNew("234567890"));
-	obj->Set(NanNew("c"), NanNew("34567890"));
-
-	NanReturnValue(obj);
+	info.GetReturnValue().Set(obj);
 }
 
 NAN_METHOD(testBuffer) {
-	NanScope();
-	uint32_t sz = args[0]->Uint32Value();
-	NanReturnValue(NanNewBufferHandle(sz));
+	uint32_t sz = info[0]->Uint32Value();
+	info.GetReturnValue().Set(Nan::NewBuffer(sz).ToLocalChecked());
 }
 
 NAN_METHOD(testBufferSmalloc) {
-	NanScope();
-	NanReturnValue(NanNewBufferHandle(0, 0, freeNothing, 0));
+	info.GetReturnValue().Set(Nan::NewBuffer(0, 0, freeNothing, 0).ToLocalChecked());
 }
 
 NAN_METHOD(testCallback) {
-	NanScope();
-	NanCallback(Local<Function>::Cast(args[0])).Call(0, 0);	
-	NanReturnUndefined();
+	Nan::Callback(Local<Function>::Cast(info[0])).Call(0, 0);
 }
 
-class IntPtr : public NnuPointer<IntPtr> {
+//class IntPtr : public NnuPointer<IntPtr> {
+//public:
+//	IntPtr() : val_(0) { }
+//	~IntPtr() { }
+//
+//	static void setup(Handle<Object>& exports) {
+//		NODE_SET_METHOD(exports, "createIntPtr", createIntPtr);
+//		NODE_SET_METHOD(exports, "unwrapIntPtr", unwrap);
+//		NODE_SET_METHOD(exports, "valOfPtr", val);
+//	}
+//
+//private:
+//	static NAN_METHOD(createIntPtr) {
+//		IntPtr *ptr = new IntPtr();
+//		info.GetReturnValue().Set(ptr->Wrap());
+//	}
+//
+//	static NAN_METHOD(unwrap) {
+//		IntPtr* ptr = Unwrap(args[0]);
+//		NanReturnUndefined();
+//	}
+//
+//	static NAN_METHOD(val) {
+//		IntPtr* ptr = Unwrap(args[0]);
+//
+//		if (args[1]->IsNumber()) {
+//			ptr->val_ = args[1]->Int32Value();
+//			NanReturnUndefined();
+//		} else {
+//			info.GetReturnValue().Set(Nan::New(ptr->val_));
+//		}
+//	}
+//
+//private:
+//	int val_;
+//};
+
+class TestWrap : public Nan::ObjectWrap {
 public:
-	IntPtr() : val_(0) { }
-	~IntPtr() { }
-
-	static void setup(Handle<Object>& exports) {
-		NODE_SET_METHOD(exports, "createIntPtr", createIntPtr);
-		NODE_SET_METHOD(exports, "unwrapIntPtr", unwrap);
-		NODE_SET_METHOD(exports, "valOfPtr", val);
-	}
-
-private:
-	static NAN_METHOD(createIntPtr) {
-		NanScope();
-		IntPtr *ptr = new IntPtr();
-		NanReturnValue(ptr->Wrap());
-	}
-
-	static NAN_METHOD(unwrap) {
-		NanScope();
-		IntPtr* ptr = Unwrap(args[0]);
-		NanReturnUndefined();
-	}
-
-	static NAN_METHOD(val) {
-		NanScope();
-		IntPtr* ptr = Unwrap(args[0]);
-
-		if (args[1]->IsNumber()) {
-			ptr->val_ = args[1]->Int32Value();
-			NanReturnUndefined();
-		} else {
-			NanReturnValue(NanNew(ptr->val_));
-		}
-	}
-
-private:
-	int val_;
-};
-
-class TestWrap : public ObjectWrap {
-public:
-	static Persistent<Function> ctor;
+	static Nan::Persistent<Function> ctor;
 
 	void static setup(Handle<Object> exports) {
-		Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(TestWrap::New);
-		tpl->SetClassName(NanNew("TestWrap"));
+		Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(TestWrap::New);
+		tpl->SetClassName(Nan::New("TestWrap").ToLocalChecked());
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-		NODE_SET_PROTOTYPE_METHOD(tpl, "unwrap", TestWrap::unwrap);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "foo", TestWrap::foo);
+		Nan::SetPrototypeMethod(tpl, "unwrap", TestWrap::unwrap);
+		Nan::SetPrototypeMethod(tpl, "foo", TestWrap::foo);
 
-		exports->Set(NanNew("TestWrap"), tpl->GetFunction());
-		NanAssignPersistent(TestWrap::ctor, tpl->GetFunction());
+		exports->Set(Nan::New("TestWrap").ToLocalChecked(), tpl->GetFunction());
+		TestWrap::ctor.Reset(tpl->GetFunction());
 	}
 
 	static NAN_METHOD(New) {
-		NanScope();
-
 		TestWrap* tw = new TestWrap();
-		tw->Wrap(args.This());
+		tw->Wrap(info.This());
 
-		NanReturnValue(args.This());
+		info.GetReturnValue().Set(info.This());
 	}
 
 	static NAN_METHOD(unwrap) {
-		NanScope();
-		TestWrap* tw = ObjectWrap::Unwrap<TestWrap>(args.This());
+		TestWrap* tw = Nan::ObjectWrap::Unwrap<TestWrap>(info.This());
 		tw->_foo++;
-		NanReturnUndefined();
 	}
 
-	static NAN_METHOD(foo) {
-		NanScope();
-		NanReturnUndefined();
-	}
+	static NAN_METHOD(foo) { }
 
 private:
 	int _foo;
 };
 
-Persistent<Function> TestWrap::ctor;
+Nan::Persistent<Function> TestWrap::ctor;
 
 NAN_METHOD(testWrapNew) {
-	NanScope();
-	NanReturnValue(NanNew(TestWrap::ctor)->NewInstance());
+	info.GetReturnValue().Set(Nan::New(TestWrap::ctor)->NewInstance());
 }
 
-Persistent<Context> testContext;
-Persistent<Script> testScript;
+Nan::Persistent<Context> testContext;
+Nan::Persistent<Script> testScript;
 void initTestContext() {
-	Handle<ObjectTemplate> global = NanNew<ObjectTemplate>();
-	global->Set(NanNew("a"), NanNew("1234567890"));
-	global->Set(NanNew("b"), NanNew("234567890"));
-	global->Set(NanNew("c"), NanNew("34567890"));
+	Handle<ObjectTemplate> global = Nan::New<ObjectTemplate>();
+	global->Set(Nan::New("a").ToLocalChecked(), Nan::New("1234567890").ToLocalChecked());
+	global->Set(Nan::New("b").ToLocalChecked(), Nan::New("234567890").ToLocalChecked());
+	global->Set(Nan::New("c").ToLocalChecked(), Nan::New("34567890").ToLocalChecked());
 
-	v8::Handle<v8::Context> context = NanNewContextHandle(NULL, global);
+	v8::Handle<v8::Context> context = Nan::New<Context>((ExtensionConfiguration*)(NULL), global);
 	Context::Scope context_scope(context);
-	NanAssignPersistent(testContext, context);
+	testContext.Reset(context);
 
-	Handle<Script> script = Script::Compile(NanNew("({ a: a, b: b, c: c })"));
-	NanAssignPersistent(testScript, script);
+    Handle<Script> script = Nan::CompileScript(Nan::New("({ a: a, b: b, c: c })").ToLocalChecked()).ToLocalChecked();
+	testScript.Reset(script);
 }
 
 NAN_METHOD(testRun) {
-	NanScope();
-	//Context::Scope context_scope(NanNew(testContext));
-	Local<Script> script = NanNew(testScript);
-	NanReturnValue(script->Run());
+	Context::Scope context_scope(Nan::New(testContext));
+	Local<Script> script = Nan::New(testScript);
+	info.GetReturnValue().Set(script->Run());
 }
 
-void InitAll(Handle<Object> exports) {
+NAN_MODULE_INIT(InitAll) {
 	initTestContext();
-	NODE_SET_METHOD(exports, "testRun", testRun);
 
-	NODE_SET_METHOD(exports, "testCall", testCall);
-	NODE_SET_METHOD(exports, "testAsync", testAsync);
-	NODE_SET_METHOD(exports, "testRetString", testRetString);
-    NODE_SET_METHOD(exports, "testRetArray", testRetArray);
-	NODE_SET_METHOD(exports, "testGet", testGet);
-    NODE_SET_METHOD(exports, "testArrayGet", testArrayGet);
-    NODE_SET_METHOD(exports, "testArgs", testArgs);
-    NODE_SET_METHOD(exports, "testRetObj", testRetObj);
-	NODE_SET_METHOD(exports, "testCallback", testCallback);
-	NODE_SET_METHOD(exports, "testBuffer", testBuffer);
-	NODE_SET_METHOD(exports, "testBufferSmalloc", testBufferSmalloc);
-	NODE_SET_METHOD(exports, "testWrapNew", testWrapNew);
-	IntPtr::setup(exports);
-	TestWrap::setup(exports);
+	NAN_EXPORT(target, testRun);
+
+	NAN_EXPORT(target, testCall);
+	NAN_EXPORT(target, testAsync);
+	NAN_EXPORT(target, testRetString);
+    NAN_EXPORT(target, testRetArray);
+	NAN_EXPORT(target, testGet);
+    NAN_EXPORT(target, testArrayGet);
+    NAN_EXPORT(target, testArgs);
+    NAN_EXPORT(target, testRetObj);
+	NAN_EXPORT(target, testCallback);
+	NAN_EXPORT(target, testBuffer);
+	NAN_EXPORT(target, testBufferSmalloc);
+	NAN_EXPORT(target, testWrapNew);
+	//IntPtr::setup(exports);
+	TestWrap::setup(target);
 }
 
 NODE_MODULE(node_microbench, InitAll);
