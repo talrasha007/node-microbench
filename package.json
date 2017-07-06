@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "repository": "https://github.com/talrasha007/node-microbench.git",
   "dependencies": {
-    "nan": "^2.1.0"
+    "nan": "^2.6.2"
   },
   "readmeFile": "README.md",
   "main": "build/Release/node-microbench.node"

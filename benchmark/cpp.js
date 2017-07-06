@@ -89,6 +89,15 @@ suite('object wrap', function () {
     //bench('val of IntPtr', function () { binding.valOfPtr(ptr); });
 });
 
+suite('class wrap', function () {
+    var cw = new binding.TestClassWrap();
+
+    bench('ctor:js', function () { new binding.TestClassWrap(); });
+    bench('ctor:c++', function () { binding.testClassWrapNew(); });
+    bench('function call', function () { cw.foo(); });
+    bench('unwrap', function () { cw.unwrap(); });
+});
+
 suite('callback', function () {
     function jsfn(cb) { return cb(); }
 

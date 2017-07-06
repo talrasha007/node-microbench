@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <nnu.h>
 
 using namespace v8;
 using namespace node;
@@ -156,7 +156,39 @@ private:
 Nan::Persistent<Function> TestWrap::ctor;
 
 NAN_METHOD(testWrapNew) {
-	info.GetReturnValue().Set(Nan::New(TestWrap::ctor)->NewInstance());
+	info.GetReturnValue().Set(Nan::NewInstance(Nan::New(TestWrap::ctor)).ToLocalChecked());
+}
+
+class TestClassWrap : public nnu::ClassWrap<TestClassWrap> {
+public:
+	static const char * const CLASS_NAME;
+
+	static void setupMember(v8::Local<v8::FunctionTemplate>& tpl) {
+		Nan::SetPrototypeMethod(tpl, "unwrap", wrapFunction<&TestClassWrap::unwrap>);
+		Nan::SetPrototypeMethod(tpl, "foo", wrapFunction<&TestClassWrap::foo>);
+	}
+
+	static NAN_METHOD(ctor) {
+		TestClassWrap* cw = new TestClassWrap();
+		cw->Wrap(info.This());
+
+		info.GetReturnValue().Set(info.This());
+	}
+
+	NAN_METHOD(unwrap) {
+		_foo++;
+	}
+
+	NAN_METHOD(foo) { }
+
+private:
+	int _foo;
+};
+
+const char * const TestClassWrap::CLASS_NAME = "TestClassWrap";
+
+NAN_METHOD(testClassWrapNew) {
+	info.GetReturnValue().Set(TestClassWrap::newInstance());
 }
 
 Nan::Persistent<Context> testContext;
@@ -198,8 +230,10 @@ NAN_MODULE_INIT(InitAll) {
 	NAN_EXPORT(target, testBuffer);
 	NAN_EXPORT(target, testBufferSmalloc);
 	NAN_EXPORT(target, testWrapNew);
+	NAN_EXPORT(target, testClassWrapNew);
 	//IntPtr::setup(exports);
 	TestWrap::setup(target);
+	TestClassWrap::setup(target);
 }
 
 NODE_MODULE(node_microbench, InitAll);
