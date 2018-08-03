@@ -1,10 +1,13 @@
 var binding = require('../build/Release/node-microbench.node');
+var functions = require('../wasm/functions');
 
 suite('empty function call', function () {
     function jsfn() {}
 
     bench('js', function () { jsfn(); });
     bench('c++', function () { binding.testCall(); });
+    bench('wasm', function () { functions._testCall(); });
+    bench('wasm.asm', function () { functions.asm._testCall(); });
 });
 
 suite('async', function () {
