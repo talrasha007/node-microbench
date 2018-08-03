@@ -1,5 +1,6 @@
 var binding = require('../build/Release/node-microbench.node');
 var functions = require('../wasm/functions');
+var bind = require('../wasm/bind');
 
 suite('empty function call', function () {
     function jsfn() {}
@@ -8,6 +9,7 @@ suite('empty function call', function () {
     bench('c++', function () { binding.testCall(); });
     bench('wasm', function () { functions._testCall(); });
     bench('wasm.asm', function () { functions.asm._testCall(); });
+    bench('wasm.bind', function () { bind.testCall(); });
 });
 
 suite('async', function () {
@@ -35,10 +37,11 @@ suite('async', function () {
 });
 
 suite('string ret function call', function () {
-    function jsfn() { return 'aaa'; }
+    function jsfn() { return '1234567890'; }
 
     bench('js', function () { jsfn(); });
     bench('c++', function () { binding.testRetString(); });
+    bench('wasm.bind', function () { bind.testRetString(); });
 });
 
 suite('array ret function call', function () {
