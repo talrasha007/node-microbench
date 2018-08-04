@@ -127,19 +127,19 @@ suite('buffer', function () {
 suite('wasm ptr', function () {
     let ptr;
     before(function (next) {
-        ptr = functions._createPtr(32);
+        ptr = functions.asm._createPtr(32);
         next();
     });
 
     after(function (next) {
-        functions._deletePtr(ptr);
+        functions.asm._deletePtr(ptr);
         next();
     });
 
     bench('create/delete', function () {
-      const pp = functions._createPtr(32);
-      functions._deletePtr(pp);
+      const pp = functions.asm._createPtr(32);
+      functions.asm._deletePtr(pp);
     });
-    bench('set', function () { functions._setPtr(ptr, 0, 1); });
-    bench('get', function () { functions._getPtr(ptr, 0); });
+    bench('set', function () { functions.asm._setPtr(ptr, 0, 1); });
+    bench('get', function () { functions.asm._getPtr(ptr, 0); });
 });
