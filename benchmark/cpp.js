@@ -124,3 +124,22 @@ suite('buffer', function () {
     bench('buffer writeI32BE', function () { return buf.writeUInt32BE(0, 0); });
 });
 
+suite('wasm ptr', function () {
+    let ptr;
+    before(function (next) {
+        ptr = functions._createPtr(32);
+        next();
+    });
+
+    after(function (next) {
+        functions._deletePtr(ptr);
+        next();
+    });
+
+    bench('create/delete', function () {
+      const pp = functions._createPtr(32);
+      functions._deletePtr(pp);
+    });
+    bench('set', function () { functions._setPtr(ptr, 0, 1); });
+    bench('get', function () { functions._getPtr(ptr, 0); });
+});
