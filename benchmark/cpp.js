@@ -1,3 +1,4 @@
+var util = require('util');
 var binding = require('../build/Release/node-microbench.node');
 var functions = require('../wasm/functions');
 
@@ -117,6 +118,10 @@ suite('buffer', function () {
     bench('c++ size 0', function () { binding.testBuffer(0); });
     bench('js size 8', function () { jsfn(8); });
     bench('c++ size 8', function () { binding.testBuffer(8); });
+
+    var encoder = new util.TextEncoder('utf8');
+    bench('js from utf8', function () { new Buffer('abcdefg'); });
+    bench('TextEncoder', function () { encoder.encode('abcdefg'); });
 
     bench('c++:smalloc', function () { binding.testBufferSmalloc(); });
     bench('buffer [] access', function () { return buf[i++ % buf.length]; });
