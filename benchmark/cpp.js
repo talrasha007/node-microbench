@@ -1,3 +1,4 @@
+var util = require('util');
 var binding = require('../build/Release/node-microbench.node');
 var functions = require('../wasm/functions');
 var bind = require('../wasm/bind');
@@ -121,9 +122,32 @@ suite('buffer', function () {
     bench('js size 8', function () { jsfn(8); });
     bench('c++ size 8', function () { binding.testBuffer(8); });
 
+    var encoder = new util.TextEncoder('utf8');
+    bench('js from utf8', function () { new Buffer('abcdefg'); });
+    bench('TextEncoder', function () { encoder.encode('abcdefg'); });
+
     bench('c++:smalloc', function () { binding.testBufferSmalloc(); });
     bench('buffer [] access', function () { return buf[i++ % buf.length]; });
     bench('buffer readI32BE', function () { return buf.readUInt32BE(0); });
     bench('buffer writeI32BE', function () { return buf.writeUInt32BE(0, 0); });
 });
 
+suite('wasm ptr', function () {
+    let ptr;
+    before(function (next) {
+        ptr = functions.asm._createPtr(32);
+        next();
+    });
+
+    after(function (next) {
+        functions.asm._deletePtr(ptr);
+        next();
+    });
+
+    bench('create/delete', function () {
+      const pp = functions.asm._createPtr(32);
+      functions.asm._deletePtr(pp);
+    });
+    bench('set', function () { functions.asm._setPtr(ptr, 0, 1); });
+    bench('get', function () { functions.asm._getPtr(ptr, 0); });
+});
